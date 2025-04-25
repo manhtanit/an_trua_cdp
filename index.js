@@ -127,6 +127,7 @@ const tranVuUserToSettleUpUserMap = {
   "Hải Nguyễn Thanh": "Hải Nguyễn Thanh",
 };
 
+
 const groupId = '-ODB9xrowVLyiNaE3-Ju';
 
 const getSettleUpUsers = async (token) => {
@@ -232,12 +233,27 @@ const createTransaction = async (
     inputSettleUpToken.className = 'form-control';
     inputSettleUpToken.placeholder = 'Settle up token';
 
-    const settleUpTokenTmp = localStorage.getItem('settleUpTokenTmp');
+
+
+    const settleUpTokenLocalKey  = 'settleUpTokenTmp';
+    const settleUpTokenTmp = localStorage.getItem(settleUpTokenLocalKey);
     if (settleUpTokenTmp) {
       inputSettleUpToken.value = settleUpTokenTmp;
     }
 
+    const inputPayerUser = document.createElement('input');
+    inputPayerUser.className = 'form-control';
+    inputPayerUser.placeholder = 'Người trả tiền';
+
+
+    const settleUpPayerUserLocalKey  = 'settleUpPayerUser';
+    const settleUpPayerUser = localStorage.getItem(settleUpPayerUserLocalKey);
+    if (settleUpPayerUser) {
+      inputPayerUser.value = settleUpPayerUser;
+    }
+
     buttonDiv.appendChild(inputSettleUpToken);
+    buttonDiv.appendChild(inputPayerUser);
 
     // Add input for money amount
     const inputMoneyAmount = document.createElement('input');
@@ -268,8 +284,9 @@ const createTransaction = async (
         titleElement?.innerText ?? 'Unknown restaurant',
         inputSettleUpToken.value
       );
-      localStorage.setItem('settleUpTokenTmp', inputSettleUpToken.value);
+      localStorage.setItem(settleUpTokenLocalKey, inputSettleUpToken.value);
       localStorage.setItem(moneyAmountLocalKey, inputMoneyAmount.value);
+      localStorage.setItem(settleUpPayerUserLocalKey, inputPayerUser.value);
     });
     buttonDiv.appendChild(btnSettleUp);
 
@@ -350,7 +367,7 @@ const createTransaction = async (
       createTransaction(
         settleUpToken,
         payeeAmountArray,
-        userNameToIdMap['Nguyên Chủ tịch'],
+        userNameToIdMap[inputPayerUser.value],
         amount,
         `${truncate(restaurentName, 15)} ${orderDate}`
       );
