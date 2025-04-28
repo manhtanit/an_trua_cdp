@@ -144,6 +144,20 @@ const getSettleUpUsers = async (token) => {
   return res.json();
 };
 
+const getSettleUpDebts = async (token) => {
+  var requestOptions = {
+    method: 'GET',
+    redirect: 'follow',
+  };
+
+  const res = await fetch(
+    `https://settle-up-live.firebaseio.com/debts/${groupId}.json?auth=${token}`,
+    requestOptions
+  );
+
+  return res.json();
+};
+
 // createTransaction: create a transaction on settle up
 // token: token of settle up
 // payeeAmountMap: array of payee user id and price of them
@@ -327,14 +341,29 @@ const createTransaction = async (
 
       const usersMap = await getSettleUpUsers(settleUpToken);
       const userNameToIdMap = {};
+      const userIdToUserBalanceMap = {};
       console.log(usersMap);
       Object.keys(usersMap).forEach((key) => {
         if (usersMap[key].active) {
           userNameToIdMap[usersMap[key].name] = key;
+          userIdToUserBalanceMap[key] = 0;
         }
       });
 
       console.log('userNameToIdMap', userNameToIdMap);
+
+      const debts = await getSettleUpDebts(settleUpToken);
+      console.log(debts);
+      debts.forEach((debt, i) => {
+        console.log(i, debt);
+        userIdToUserBalanceMap[debt.from] -= debt.amount;
+        userIdToUserBalanceMap[debt.to] += debt.amount;
+      });
+
+      console.log('Balance');
+      Object.keys(userIdToUserBalanceMap).forEach((key) => {
+        console.log(usersMap[key].name, userIdToUserBalanceMap[key]);
+      });
 
       const orderedFoodUsers = Object.values(shopeeOrderData);
       // const payeeUIDs = orderedFoodUsers.map(
@@ -343,6 +372,7 @@ const createTransaction = async (
       // );
 
       let notFindUsers = [];
+      let insufficientBalanceUsers = [];
 
       console.log({ orderedFoodUsers });
 
@@ -351,6 +381,10 @@ const createTransaction = async (
         if (!userId) {
           notFindUsers.push(order.name);
         }
+        if (userIdToUserBalanceMap[userId] < 50) {
+          insufficientBalanceUsers.push(userNameToIdMap[tranVuUserToSettleUpUserMap[order.name]])
+        }
+
         return {
           userId,
           amount: order.price,
@@ -359,6 +393,10 @@ const createTransaction = async (
 
       if (notFindUsers.length > 0) {
         alert(`Không tìm thấy user cho ${notFindUsers.join(', ')}`);
+        return;
+      }
+      if (insufficientBalanceUsers.length > 0) {
+        alert(`User không đủ số dư tối thiểu: ${notFindUsers.join(', ')}`);
         return;
       }
 
