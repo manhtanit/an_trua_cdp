@@ -396,8 +396,7 @@ const createTransaction = async (
         return;
       }
       if (insufficientBalanceUsers.length > 0) {
-        alert(`User không đủ số dư tối thiểu: ${notFindUsers.join(', ')}`);
-        return;
+        alert(`User không đủ số dư tối thiểu: ${insufficientBalanceUsers.join(', ')}`);
       }
 
       console.log('payeeAmountMap', payeeAmountArray);
