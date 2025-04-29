@@ -382,7 +382,7 @@ const createTransaction = async (
           notFindUsers.push(order.name);
         }
         if (userIdToUserBalanceMap[userId] < 50) {
-          insufficientBalanceUsers.push(userNameToIdMap[tranVuUserToSettleUpUserMap[order.name]])
+          insufficientBalanceUsers.push(order.name);
         }
 
         return {
