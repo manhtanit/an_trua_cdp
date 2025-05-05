@@ -395,7 +395,7 @@ const createTransaction = async (
         alert(`Không tìm thấy user cho ${notFindUsers.join(', ')}`);
         return;
       }
-      if (insufficientBalanceUsers.length > 0) {
+      if (insufficientBalanceUsers.length > 50000) {
         alert(`User không đủ số dư tối thiểu: ${insufficientBalanceUsers.join(', ')}`);
       }
 
