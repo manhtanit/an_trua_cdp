@@ -356,8 +356,8 @@ const createTransaction = async (
       console.log(debts);
       debts.forEach((debt, i) => {
         console.log(i, debt);
-        userIdToUserBalanceMap[debt.from] -= debt.amount;
-        userIdToUserBalanceMap[debt.to] += debt.amount;
+        userIdToUserBalanceMap[debt.from] -= Number(debt.amount);
+        userIdToUserBalanceMap[debt.to] += Number(debt.amount);
       });
 
       console.log('Balance');
@@ -381,7 +381,7 @@ const createTransaction = async (
         if (!userId) {
           notFindUsers.push(order.name);
         }
-        if (userIdToUserBalanceMap[userId] < 50) {
+        if (userIdToUserBalanceMap[userId] < 50000) {
           insufficientBalanceUsers.push(order.name);
         }
 
@@ -395,7 +395,7 @@ const createTransaction = async (
         alert(`Không tìm thấy user cho ${notFindUsers.join(', ')}`);
         return;
       }
-      if (insufficientBalanceUsers.length > 50000) {
+      if (insufficientBalanceUsers.length > 0) {
         alert(`User không đủ số dư tối thiểu: ${insufficientBalanceUsers.join(', ')}`);
       }
 
